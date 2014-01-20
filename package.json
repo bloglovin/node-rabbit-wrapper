@@ -1,0 +1,25 @@
+{
+  "name": "rabbit-wrapper",
+  "version": "0.0.1",
+  "description": "Super simple rabbit usage.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --ui bdd -R spec"
+  },
+  "author": "Patrik Ring",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/bloglovin/node-rabbit-wrapper.git"
+  },
+  "dependencies": {
+    "amqplib": "0.1.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "istanbul": "~0.1.46",
+    "sinon": "~1.7.3"
+  }
+}
