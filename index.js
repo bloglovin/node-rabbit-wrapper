@@ -54,7 +54,7 @@ Rabbit.prototype.connect = function (tries) {
     });
 
     // If disconnect, we want to try to connect again
-    self.eventer.on('error', function (e) {
+    self.eventer.once('error', function (e) {
       setTimeout(function () {
         self.connect.call(self, tries);
       }, self.initial_timeout);
@@ -98,8 +98,8 @@ Rabbit.prototype.go = function (onConnect) {
     });
   });
 
-  self.eventer.on('error', function (e) {
-    self.eventer.on('connected', function () {
+  self.eventer.once('error', function (e) {
+    self.eventer.once('connected', function () {
       self.go(onConnect);
     });
   });
