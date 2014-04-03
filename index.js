@@ -19,6 +19,9 @@ var Rabbit = function (config) {
   this.connection       = null;
   this.eventer          = new EventEmitter();
 
+  // Unlimited listeners
+  this.eventer.setMaxListeners(100);
+
   // Initial connection
   this.connect(1);
 };
