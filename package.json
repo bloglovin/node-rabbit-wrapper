@@ -1,6 +1,6 @@
 {
   "name": "rabbit-wrapper",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Super simple rabbit usage.",
   "main": "index.js",
   "scripts": {
