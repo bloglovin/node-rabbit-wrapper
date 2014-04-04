@@ -90,20 +90,13 @@ describe('Rabbit wrapper', function () {
 
     it('Should not leave residual error-listeners on error', function (done) {
       var rabbiter = new rabbit(config);
-      var spy = sinon.spy();
 
-      rabbiter.go(function (ch) {
-        spy(ch);
-        var clock = sinon.useFakeTimers();
-        clock.tick(1100);
-        expect(spy.calledTwice).to.be.ok;
-        clock.restore();
-        done();
-      });
+      rabbiter.go(function () {});
 
       expect(rabbiter.eventer.listeners('error').length).to.equal(1);
       rabbiter.eventer.emit('error', 'Error');
       expect(rabbiter.eventer.listeners('error').length).to.equal(0);
+      done();
     });
 
     it('Should be able to send, receive and ack a message', function (done) {
