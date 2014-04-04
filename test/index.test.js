@@ -28,6 +28,22 @@ describe('Rabbit wrapper', function () {
       clock.restore();
     });
 
+    it('should not leave residual error-listeners on error', function (done) {
+      var clock = sinon.useFakeTimers();
+
+      expect(con.eventer.listeners('error').length).to.equal(1);
+      con.eventer.once('error', function (e) {
+        expect(con.eventer.listeners('error').length).to.equal(0);
+        con.eventer.once('connected', function () {
+          done();
+        });
+      });
+
+      con.eventer.emit('error');
+      clock.tick(1100);
+      clock.restore();
+    });
+
     it('should only try to reconnect x times on error', function () {
       var rabbiter = new rabbit(config);
       var fn = function () {
@@ -70,6 +86,17 @@ describe('Rabbit wrapper', function () {
       });
 
       rabbiter.eventer.emit('error', 'Error');
+    });
+
+    it('Should not leave residual error-listeners on error', function (done) {
+      var rabbiter = new rabbit(config);
+
+      rabbiter.go(function () {});
+
+      expect(rabbiter.eventer.listeners('error').length).to.equal(1);
+      rabbiter.eventer.emit('error', 'Error');
+      expect(rabbiter.eventer.listeners('error').length).to.equal(0);
+      done();
     });
 
     it('Should be able to send, receive and ack a message', function (done) {
