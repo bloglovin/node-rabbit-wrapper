@@ -64,7 +64,6 @@ Rabbit.prototype.connect = function (tries) {
     // We end up here if the first promise
     // fails us. That is, there's no rabbit to connect to
     setTimeout(function () {
-      console.log('called');
       self.connect.call(self, tries);
     }, (self.initial_timeout * (tries - 1)));
   });
