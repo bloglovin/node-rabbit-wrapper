@@ -93,7 +93,9 @@ Rabbit.prototype.go = function (onConnect) {
 
     // Bind our precious rabbits in shayol gul
     channel.then(function (ch) {
-      onConnect(null, ch);
+      process.nextTick(function () {
+        onConnect(null, ch);
+      });
     });
   });
 
