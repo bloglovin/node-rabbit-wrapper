@@ -56,7 +56,7 @@ Rabbit.prototype.connect = function (tries) {
     // If disconnect, we want to try to connect again
     self.eventer.once('error', function () {
       setTimeout(function () {
-        self.connect.call(self, tries);
+        self.connect(tries);
       }, self.initial_timeout);
     });
   }).then(null, function (e) {
@@ -64,7 +64,7 @@ Rabbit.prototype.connect = function (tries) {
     // We end up here if the first promise
     // fails us. That is, there's no rabbit to connect to
     setTimeout(function () {
-      self.connect.call(self, tries);
+      self.connect(tries);
     }, (self.initial_timeout * (tries - 1)));
   });
 
