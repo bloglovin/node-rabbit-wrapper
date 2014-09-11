@@ -4,7 +4,9 @@
   "description": "Super simple rabbit usage.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/istanbul test ./node_modules/.bin/_mocha -- --ui bdd -R spec"
+    "test": "node -e \"require('grunt').tasks(['test']);\"",
+    "test-all": "node -e \"require('grunt').tasks(['test-all']);\"",
+    "prepush": "npm test"
   },
   "author": "Patrik Ring",
   "license": "MIT",
@@ -17,9 +19,12 @@
     "amqplib": "0.1.0"
   },
   "devDependencies": {
-    "mocha": "*",
     "chai": "*",
-    "istanbul": "~0.1.46",
-    "sinon": "~1.7.3"
+    "grunt": "^0.4.5",
+    "husky": "^0.6.1",
+    "istanbul": "^0.3.2",
+    "lintlovin": "^1.5.0",
+    "mocha": "^1.21.4",
+    "sinon": "^1.10.3"
   }
 }

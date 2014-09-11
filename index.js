@@ -54,18 +54,18 @@ Rabbit.prototype.connect = function (tries) {
     });
 
     // If disconnect, we want to try to connect again
-    self.eventer.once('error', function (e) {
+    self.eventer.once('error', function () {
       setTimeout(function () {
-        self.connect.call(self, tries);
+        self.connect(tries);
       }, self.initial_timeout);
     });
   }).then(null, function (e) {
-    self.eventer.emit('connect_failed', e);
     // We end up here if the first promise
     // fails us. That is, there's no rabbit to connect to
     setTimeout(function () {
-      self.connect.call(self, tries);
+      self.connect(tries);
     }, (self.initial_timeout * (tries - 1)));
+    self.eventer.emit('connect_failed', e);
   });
 
 };
@@ -93,11 +93,13 @@ Rabbit.prototype.go = function (onConnect) {
 
     // Bind our precious rabbits in shayol gul
     channel.then(function (ch) {
-      onConnect(null, ch);
+      process.nextTick(function () {
+        onConnect(null, ch);
+      });
     });
   });
 
-  self.eventer.once('error', function (e) {
+  self.eventer.once('error', function () {
     self.eventer.once('connected', function () {
       self.go(onConnect);
     });
