@@ -60,12 +60,12 @@ Rabbit.prototype.connect = function (tries) {
       }, self.initial_timeout);
     });
   }).then(null, function (e) {
-    self.eventer.emit('connect_failed', e);
     // We end up here if the first promise
     // fails us. That is, there's no rabbit to connect to
     setTimeout(function () {
       self.connect(tries);
     }, (self.initial_timeout * (tries - 1)));
+    self.eventer.emit('connect_failed', e);
   });
 
 };

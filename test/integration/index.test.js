@@ -60,21 +60,31 @@ describe('Rabbit wrapper', function () {
 
     it('should fail first time', function (done) {
       this.timeout(10000);
+      var clock = sinon.useFakeTimers();
 
       var rabbiter = new Rabbit({host: 'amqp://nohost'});
       rabbiter.max_retries = 1;
 
+      var mock = sinon.mock(rabbiter);
+      mock.expects('connect').withExactArgs(2).once();
+
       rabbiter.eventer.once('connected', function () {
+        clock.restore();
         done(new Error('Connection should fail'));
       });
 
       rabbiter.eventer.on('connect_failed', function () {
-        done();
+        process.nextTick(function () {
+          clock.tick(1100);
+          clock.restore();
+          mock.verify();
+          done();
+        });
       });
     });
   });
 
-  describe('go', function () {
+  describe('go()', function () {
     it('Should have a channel', function (done) {
       con.go(function (err, channel) {
         expect(err).to.equal(null);
@@ -86,14 +96,14 @@ describe('Rabbit wrapper', function () {
     it('should set up new channel on error', function (done) {
       var rabbiter = new Rabbit(config);
       var spy = sinon.spy();
-
       rabbiter.go(function (ch) {
         spy(ch);
-        var clock = sinon.useFakeTimers();
-        clock.tick(1100);
-        expect(spy.calledTwice).to.be.ok;
-        clock.restore();
-        done();
+        if (spy.callCount === 2) {
+          setTimeout(function () {
+            expect(spy.callCount).to.be.below(3);
+            done();
+          }, 20);
+        }
       });
 
       rabbiter.eventer.emit('error', 'Error');
