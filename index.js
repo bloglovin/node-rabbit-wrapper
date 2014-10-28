@@ -9,13 +9,17 @@
 //
 
 var amqp = require('amqplib');
+var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 
 var Rabbit = function (config) {
   this.config           = config;
+  this.log              = config.log || console.error.bind(console);
   this.config.heartbeat = config.heartbeat || 1;
-  this.initial_timeout  = 1000;
-  this.max_retries      = 30;
+  this.initial_timeout  = config.timeout || 200;
+  this.max_timeout      = config.maxTimeout || 5000;
+  this.log_interval     = config.logInterval || 10000;
+  this.max_retries      = config.maxRetries !== undefined ? config.maxRetries : 30;
   this.connection       = null;
   this.eventer          = new EventEmitter();
 
@@ -23,20 +27,18 @@ var Rabbit = function (config) {
   this.eventer.setMaxListeners(100);
 
   // Initial connection
-  this.connect(1);
+  this.connect();
 };
 
-Rabbit.prototype.connect = function (tries) {
+Rabbit.prototype.connect = function (tries, nextLog) {
   var self = this;
 
   self.connection = null;
 
-  if (tries > this.max_retries) {
+  if (this.max_retries !== 0 && tries > this.max_retries) {
     var err = new Error('Rabbit: Too many connection attempts');
     throw err;
   }
-
-  tries++;
 
   // Returns a promise of a connection
   self.connection = amqp.connect(self.config.host);
@@ -45,27 +47,47 @@ Rabbit.prototype.connect = function (tries) {
     // Connected
     // Tell your friends
     self.eventer.emit('connected');
-    // Reset our retry counter
-    tries = 1;
 
     // Bind for new errors
     conn.once('error', function (e) {
       self.eventer.emit('error', e);
     });
 
+    if (tries) {
+      self.log(['rabbit', 'recovery'], {
+        message: 'Rabbitmq connection re-opened',
+      });
+    }
+
     // If disconnect, we want to try to connect again
-    self.eventer.once('error', function () {
+    self.eventer.once('error', function (err) {
+      self.log(['rabbit', 'error'], {
+        message: 'Rabbitmq connection lost',
+        error: err.message,
+      });
+
       setTimeout(function () {
-        self.connect(tries);
-      }, self.initial_timeout);
+        self.connect(1, Date.now() + self.log_interval);
+      }, self.initial_timeout * Math.random());
     });
-  }).then(null, function (e) {
+  }).then(null, function (err) {
+    if (Date.now() >= nextLog) {
+      self.log(['rabbit', 'error'], {
+        message: util.format('Rabbitmq connection still offline, %d attempts made to reconnect', tries),
+        error: err.message,
+      });
+      nextLog = Date.now() + self.log_interval;
+    }
+
+    var backOff = Math.min(self.max_timeout,
+      self.initial_timeout + (self.initial_timeout * tries * Math.random()));
+
     // We end up here if the first promise
     // fails us. That is, there's no rabbit to connect to
     setTimeout(function () {
-      self.connect(tries);
-    }, (self.initial_timeout * (tries - 1)));
-    self.eventer.emit('connect_failed', e);
+      self.connect(tries+1, nextLog);
+    }, backOff);
+    self.eventer.emit('connect_failed', err);
   });
 
 };
