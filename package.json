@@ -1,6 +1,6 @@
 {
   "name": "rabbit-wrapper",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "description": "Super simple rabbit usage.",
   "main": "index.js",
   "scripts": {
@@ -11,6 +11,7 @@
   "author": "Patrik Ring",
   "license": "MIT",
   "readmeFilename": "README.md",
+  "homepage": "https://github.com/bloglovin/node-rabbit-wrapper",
   "repository": {
     "type": "git",
     "url": "git://github.com/bloglovin/node-rabbit-wrapper.git"
