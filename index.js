@@ -33,6 +33,8 @@ var Rabbit = function (config) {
 Rabbit.prototype.connect = function (tries, nextLog) {
   var self = this;
 
+  tries = tries || 0;
+
   self.connection = null;
 
   if (this.max_retries !== 0 && tries > this.max_retries) {
