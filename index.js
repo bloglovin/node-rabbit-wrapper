@@ -82,7 +82,7 @@ Rabbit.prototype.connect = function (tries, nextLog) {
     }
 
     var backOff = Math.min(self.max_timeout,
-      self.initial_timeout + (self.initial_timeout * tries * Math.random()));
+      self.initial_timeout + (self.initial_timeout * tries * (0.5 + Math.random())));
 
     // We end up here if the first promise
     // fails us. That is, there's no rabbit to connect to
