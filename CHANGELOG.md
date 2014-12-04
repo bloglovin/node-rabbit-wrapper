@@ -1,3 +1,13 @@
+### 0.1.1 (2014-12-04)
+
+
+#### Bug Fixes
+
+* **main:**
+  * random backoff should not be close to 0 ([d5265b6a](https://github.com/bloglovin/node-rabbit-wrapper/commit/d5265b6adb8dff222b14f400e4a1c643478b9283))
+  * backoff was broken because of NaN tries ([d0ed01b9](https://github.com/bloglovin/node-rabbit-wrapper/commit/d0ed01b9ed7e57d5fe7f56938249dd73a922e930))
+
+
 ## 0.1.0 (2014-10-28)
 
 
