@@ -34,6 +34,7 @@ Rabbit.prototype.connect = function (tries, nextLog) {
   var self = this;
 
   tries = tries || 0;
+  nextLog = nextLog || 0;
 
   self.connection = null;
 
