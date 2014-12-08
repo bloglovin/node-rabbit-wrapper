@@ -1,3 +1,11 @@
+### 0.1.2 (2014-12-08)
+
+
+#### Bug Fixes
+
+* **logging:** initialize nextLog variable ([026d215d](https://github.com/bloglovin/node-rabbit-wrapper/commit/026d215d653c622fa67e99066300c9997ac415f8))
+
+
 ### 0.1.1 (2014-12-04)
 
 
